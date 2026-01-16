@@ -191,7 +191,7 @@ img {
 }
 
 .logo-image {
-    height: 160px;
+    height: 50px;
     width: auto;
     display: block;
     transition: transform 0.3s ease;
@@ -601,6 +601,10 @@ img {
         display: flex;
     }
 
+    .logo-image {
+        height: 40px;
+    }
+
     .hero-title {
         font-size: 2.5rem;
     }
@@ -628,6 +632,10 @@ img {
 }
 
 @media (max-width: 480px) {
+    .logo-image {
+        height: 35px;
+    }
+
     .hero-title {
         font-size: 2rem;
     }
