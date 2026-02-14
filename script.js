@@ -1,95 +1,57 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // Mobile Menu Toggle
-    const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+    // ========================================
+    // Mobile Menu
+    // ========================================
+    const hamburger = document.getElementById('hamburger');
     const mobileMenu = document.getElementById('mobileMenu');
-    const navLinks = document.querySelectorAll('.mobile-nav-links a');
+    const mobileLinks = mobileMenu.querySelectorAll('a');
 
-    if (mobileMenuToggle) {
-        mobileMenuToggle.addEventListener('click', () => {
-            mobileMenu.classList.toggle('active');
-            // Animate hamburger
-            const bars = mobileMenuToggle.querySelectorAll('.bar');
-            bars[0].style.transform = mobileMenu.classList.contains('active') ? 'rotate(45deg) translate(5px, 6px)' : 'none';
-            bars[1].style.opacity = mobileMenu.classList.contains('active') ? '0' : '1';
-            bars[2].style.transform = mobileMenu.classList.contains('active') ? 'rotate(-45deg) translate(5px, -6px)' : 'none';
-        });
-    }
+    hamburger.addEventListener('click', () => {
+        hamburger.classList.toggle('active');
+        mobileMenu.classList.toggle('active');
+    });
 
-    // Close mobile menu when clicking a link
-    navLinks.forEach(link => {
+    mobileLinks.forEach(link => {
         link.addEventListener('click', () => {
+            hamburger.classList.remove('active');
             mobileMenu.classList.remove('active');
-            const bars = mobileMenuToggle.querySelectorAll('.bar');
-            bars[0].style.transform = 'none';
-            bars[1].style.opacity = '1';
-            bars[2].style.transform = 'none';
         });
     });
 
+    // ========================================
     // Smooth Scrolling
+    // ========================================
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function (e) {
             e.preventDefault();
             const target = document.querySelector(this.getAttribute('href'));
             if (target) {
-                const headerOffset = 80;
-                const elementPosition = target.getBoundingClientRect().top;
-                const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
-
-                window.scrollTo({
-                    top: offsetPosition,
-                    behavior: "smooth"
-                });
+                const offset = 80;
+                const position = target.getBoundingClientRect().top + window.pageYOffset - offset;
+                window.scrollTo({ top: position, behavior: 'smooth' });
             }
         });
     });
 
-    // Particle Effect
-    const particlesContainer = document.getElementById('particles');
-    if (particlesContainer) {
-        const particleCount = 50;
-        
-        for (let i = 0; i < particleCount; i++) {
-            const particle = document.createElement('div');
-            particle.classList.add('particle');
-            
-            // Random properties
-            const size = Math.random() * 3 + 1;
-            const posX = Math.random() * 100;
-            const posY = Math.random() * 100;
-            const delay = Math.random() * 20;
-            const duration = Math.random() * 10 + 10;
-            
-            particle.style.cssText = `
-                position: absolute;
-                width: ${size}px;
-                height: ${size}px;
-                background: rgba(59, 130, 246, ${Math.random() * 0.5});
-                border-radius: 50%;
-                left: ${posX}%;
-                top: ${posY}%;
-                animation: float ${duration}s infinite linear -${delay}s;
-            `;
-            
-            particlesContainer.appendChild(particle);
-        }
-    }
+    // ========================================
+    // Navbar Scroll Shadow
+    // ========================================
+    const navbar = document.getElementById('navbar');
 
-    // Add float animation keyframes dynamically
-    const styleSheet = document.createElement("style");
-    styleSheet.innerText = `
-        @keyframes float {
-            0% { transform: translateY(0) translateX(0); opacity: 0; }
-            10% { opacity: 1; }
-            90% { opacity: 1; }
-            100% { transform: translateY(-100px) translateX(20px); opacity: 0; }
+    window.addEventListener('scroll', () => {
+        if (window.pageYOffset > 80) {
+            navbar.style.boxShadow = '0 1px 12px rgba(0, 0, 0, 0.06)';
+        } else {
+            navbar.style.boxShadow = 'none';
         }
-    `;
-    document.head.appendChild(styleSheet);
+    }, { passive: true });
 
-    // Scroll Animation (Fade Up)
+    // ========================================
+    // Scroll Animations (Intersection Observer)
+    // ========================================
     const observerOptions = {
-        threshold: 0.1
+        threshold: 0.15,
+        rootMargin: '0px 0px -60px 0px'
     };
 
     const observer = new IntersectionObserver((entries) => {
@@ -101,20 +63,74 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }, observerOptions);
 
-    document.querySelectorAll('.service-card, .portfolio-item, .section-title, .about-text').forEach(el => {
-        el.style.opacity = '0';
-        el.style.transform = 'translateY(20px)';
-        el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+    document.querySelectorAll('[data-animate]').forEach(el => {
         observer.observe(el);
     });
 
-    // Add visible class styles dynamically
-    const fadeStyle = document.createElement("style");
-    fadeStyle.innerText = `
-        .visible {
-            opacity: 1 !important;
-            transform: translateY(0) !important;
+    // ========================================
+    // Animated Log Feed
+    // ========================================
+    const logFeedBody = document.getElementById('logFeedBody');
+
+    const logEvents = [
+        { action: 'user.login', type: 'login', desc: 'jane@acme.com authenticated via SSO' },
+        { action: 'doc.updated', type: 'update', desc: 'Invoice #1042 modified by john@acme.com' },
+        { action: 'role.changed', type: 'setting', desc: 'Admin access granted to mike@acme.com' },
+        { action: 'file.exported', type: 'export', desc: 'Q4 report downloaded by sarah@acme.com' },
+        { action: 'api.called', type: 'create', desc: 'POST /api/v1/invoices from 192.168.1.1' },
+        { action: 'plan.upgraded', type: 'setting', desc: 'Billing plan changed to Enterprise' },
+        { action: 'user.invited', type: 'create', desc: 'alex@acme.com invited by jane@acme.com' },
+        { action: 'doc.deleted', type: 'delete', desc: 'Draft proposal removed by john@acme.com' },
+        { action: 'user.logout', type: 'login', desc: 'mike@acme.com session ended' },
+        { action: 'key.rotated', type: 'setting', desc: 'API key rotated for production env' },
+        { action: 'export.csv', type: 'export', desc: 'User activity report generated' },
+        { action: 'webhook.sent', type: 'create', desc: 'Event dispatched to slack-integration' },
+        { action: 'perm.revoked', type: 'delete', desc: 'Write access removed for intern@acme.com' },
+        { action: 'mfa.enabled', type: 'setting', desc: 'Two-factor auth enabled by cto@acme.com' },
+    ];
+
+    const MAX_VISIBLE = 8;
+    let currentIndex = 0;
+
+    function getTimeString() {
+        const now = new Date();
+        return now.toTimeString().slice(0, 8);
+    }
+
+    function createLogEntry(event) {
+        const entry = document.createElement('div');
+        entry.classList.add('log-entry');
+        entry.innerHTML =
+            '<span class="log-time">' + getTimeString() + '</span>' +
+            '<span class="log-action ' + event.type + '">' + event.action + '</span>' +
+            '<span class="log-desc">' + event.desc + '</span>';
+        return entry;
+    }
+
+    function addLogEntry() {
+        const event = logEvents[currentIndex % logEvents.length];
+        const entry = createLogEntry(event);
+
+        logFeedBody.appendChild(entry);
+
+        // Remove oldest entries when exceeding max
+        const entries = logFeedBody.querySelectorAll('.log-entry');
+        if (entries.length > MAX_VISIBLE) {
+            const oldest = entries[0];
+            oldest.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+            oldest.style.opacity = '0';
+            oldest.style.transform = 'translateX(-12px)';
+            setTimeout(() => oldest.remove(), 300);
         }
-    `;
-    document.head.appendChild(fadeStyle);
+
+        currentIndex++;
+    }
+
+    // Initial batch with stagger
+    for (let i = 0; i < 6; i++) {
+        setTimeout(() => addLogEntry(), i * 250);
+    }
+
+    // Continue adding entries on interval
+    setInterval(addLogEntry, 2600);
 });
